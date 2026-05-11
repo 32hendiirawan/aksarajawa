@@ -1,0 +1,198 @@
+
+/* --- Reset & Base Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f1f5f9;
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* --- Layout Container --- */
+.container {
+    background-color: #ffffff;
+    width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+}
+@media (min-width: 768px) {
+    .container {
+        padding: 2rem;
+    }
+}
+
+/* --- Header --- */
+.header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: -10px;
+}
+.header p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* --- Panel Konfigurasi / Checkbox --- */
+.config-panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8fafc;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+@media (min-width: 768px) {
+    .config-panel {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+.config-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    user-select: none;
+}
+.config-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: #4f46e5;
+    cursor: pointer;
+}
+
+/* --- Form Inputs --- */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+}
+.textarea-input {
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    outline: none;
+    font-size: 16px;
+    resize: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.textarea-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* --- Output Area --- */
+.output-box {
+    font-family: 'Noto Sans Javanese', 'Tuladha Jejeg', 'Javanese Text', serif;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(238, 242, 255, 0.5);
+    border: 1px solid #e0e7ff;
+    border-radius: 0.75rem;
+    font-size: 24px;
+    line-height: 1.8;
+    color: #1e1b4b;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    height: 200px;
+}
+@media (min-width: 768px) {
+    .output-box {
+        font-size: 24px;
+    }
+}
+
+/* --- Panduan --- */
+.footer-guide {
+    margin-top: 0px;
+    padding-top: 1rem;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+.footer-guide .title {
+    font-weight: bold;
+    color: #334155;
+    margin-bottom: 0;
+}
+.guide-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1rem;
+}
+@media (min-width: 640px) {
+    .guide-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+.guide-list {
+    list-style-type: disc;
+    padding-left: 1rem;
+}
+.guide-list li {
+    margin-bottom: 0.25rem;
+}
+.code-highlight {
+    font-family: monospace;
+    color: #4f46e5;
+    font-weight: bold;
+}
+/* --- Style Tombol Salin --- */
+.btn-copy {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s, transform 0.1s;
+    font-family: inherit;
+}
+
+.btn-copy:hover {
+    background-color: #4338ca;
+}
+
+.btn-copy:active {
+    transform: scale(0.95);
+}
+
+.btn-copy.copied {
+    background-color: #10b981; /* Berubah hijau saat sukses disalin */
+}
