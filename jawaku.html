@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksara Jawa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .aksara-jawa {
+            font-family: 'Noto Sans Javanese', 'Tuladha Jejeg', 'Javanese Text', serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+<div class="bg-white w-full max-w-3xl rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8">
+    <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-slate-800">Aksara Jawa - <span class="aksara-jawa">ꦄꦏ꧀ꦱꦫꦗꦮ</span></h1>
+        <p class="text-sm text-slate-500 mt-1">Transliterasi Huruf Latin ke Aksara Jawa</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="optIgnoreSpace" class="rounded text-indigo-600 focus:ring-indigo-500">
+            <span class="text-xs font-semibold text-slate-700">Abaikan Spasi</span>
+        </label>
+        <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="optDiphthong" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+            <span class="text-xs font-semibold text-slate-700">Diftong (ai, au, ii)</span>
+        </label>
+        <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="optAksaraSwara" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+            <span class="text-xs font-semibold text-slate-700">Aksara Swara</span>
+        </label>
+        <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="optMurda" class="rounded text-indigo-600 focus:ring-indigo-500">
+            <span class="text-xs font-semibold text-slate-700">Aktifkan Murda</span>
+        </label>
+    </div>
+
+    <div class="space-y-2">
+        <div>
+            <label for="inputLatin" class="block text-sm font-semibold text-slate-700 mb-2">Input Teks Latin:</label>
+            <textarea id="inputLatin" 
+                      class="w-full h-36 p-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-lg resize-none"
+                      placeholder="Ketik di sini"></textarea>
+        </div>
+        <div class="pt-6 text-xs text-slate-500">
+            <p class="font-semibold text-slate-700">Catatan :</p>
+            <ul class="list-disc pl-4 space-y-1">
+                <li><strong class="font-mono text-indigo-600">|</strong> (tombol pipe) : Adeg-adeg (꧋) untuk awal paragraf</li>
+                <li><strong class="font-mono text-indigo-600">x</strong> : Pepet (ꦼ)  untuk bunyi e pada kata "cecak"</li>
+                <li><strong class="font-mono text-indigo-600">e</strong> : Taling (ꦺ)  untuk bunyi e pada kata "bebek"</li>
+            </ul>
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Hasil Aksara Jawa:</label>
+            <div id="outputJawa" 
+                 class="aksara-jawa min-h-[140px] w-full p-5 bg-indigo-50/50 border border-indigo-100 rounded-xl text-3xl md:text-4xl leading-relaxed text-indigo-950 break-words whitespace-pre-wrap"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DICTIONARIES ---
+    const wyanjana = {
+        b: 'ꦧ', bh: 'ꦨ', c: 'ꦕ', ch: 'ꦖ', d: 'ꦢ', dh: 'ꦝ', ḍ: 'ꦝ', ḍh: 'ꦞ',
+        dz: 'ꦢ꦳', f: 'ꦥ꦳', g: 'ꦒ', gh: 'ꦒ꦳', g̣: 'ꦓ', h: 'ꦲ', j: 'ꦗ', jh: 'ꦙ',
+        k: 'ꦏ', ḳ: 'ꦑ', kh: 'ꦏ꦳', l: 'ꦭ', m: 'ꦩ', n: 'ꦤ', ng: 'ꦔ', ŋ: 'ꦔ',
+        ny: 'ꦚ', ñ: 'ꦚ', ṇ: 'ꦟ', p: 'ꦥ', ph: 'ꦦ', q: 'ꦐ', r: 'ꦫ', ṛ: 'ꦬ',
+        s: 'ꦱ', ś: 'ꦯ', ṣ: 'ꦰ', t: 'ꦠ', th: 'ꦛ', ṭ: 'ꦡ', ṭh: 'ꦜ', v: 'ꦮ꦳',
+        w: 'ꦮ', x: 'ꦏ꧀ꦱ', y: 'ꦪ', z: 'ꦗ꦳'
+    };
+
+    const swara = {
+        a: 'ꦄ', ā: 'ꦄꦴ', aa: 'ꦄꦴ', ô: 'ꦄ', ôô: 'ꦄꦴ', ai: 'ꦍ', ôi: 'ꦍ',
+        au: 'ꦎꦴ', ôu: 'ꦎꦴ', i: 'ꦆ', ï: 'ꦅ', ii: 'ꦇ', ī: 'ꦇ', u: 'ꦈ',
+        ū: 'ꦈꦴ', uu: 'ꦈꦴ', e: 'ꦌ', é: 'ꦌ', ê: 'ꦄꦼ', o: 'ꦎ'
+    };
+
+    const murdaConsonants = {
+        'n': 'ꦟ', 'k': 'ꦑ', 'kh': 'ꦑ꦳', 't': 'ꦡ', 's': 'ꦯ', 'p': 'ꦦ',
+        'f': 'ꦦ꦳', 'ny': 'ꦘ', 'ñ': 'ꦘ', 'g': 'ꦓ', 'gh': 'ꦓ꦳', 'b': 'ꦨ'
+    };
+
+    const sandhanganWyanjana = { r: 'ꦿ', ṛ: 'ꦽ', y: 'ꦾ' };
+    const sandhanganPanyigeg = { r: 'ꦂ', h: 'ꦃ', ng: 'ꦁ' };
+    
+    const sandhanganSwara = { 
+        a: '', ô: '', aa: 'ꦴ', ai: 'ꦻ', au: 'ꦻꦴ', ôô: '', ā: 'ꦴ',
+        i: 'ꦶ', ii: 'ꦷ', ī: 'ꦷ', u: 'ꦸ', uu: 'ꦹ', ū: 'ꦹ',
+        e: 'ꦺ', è: 'ꦺ', é: 'ꦺ', ê: 'ꦼ', ě: 'ꦼ', êu: 'ꦼꦴ', ěu: 'ꦼꦴ', o: 'ꦺꦴ'
+    };
+
+    const angka = {
+        '0': '꧐', '1': '꧑', '2': '꧒', '3': '꧓', '4': '꧔', '5': '꧕', '6': '꧖', '7': '꧗', '8': '꧘', '9': '꧙'
+    };
+
+    const pada = { ' ': '', '.': '꧉', ',': '꧈', '|': '꧋' }; // Ditambahkan adeg-adeg '|'
+
+    // --- LOGIC FUNCTIONS ---
+    function isWyanjana(key) { return Object.values(wyanjana).includes(key); }
+    function isWyanjanaPasanganInRight(wyanjanaChar) { 
+        return wyanjanaChar === 'ꦥ' || wyanjanaChar === 'ꦥ꦳' || wyanjanaChar === 'ꦲ' || wyanjanaChar === 'ꦏ꧀ꦱ' || wyanjanaChar === 'ꦰ' || wyanjanaChar === 'ꦱ' || wyanjanaChar === 'ꦦ'; 
+    }
+    function isWyanjanaPasanganInBelow(wyanjanaChar) { 
+        return isWyanjana(wyanjanaChar) && !isWyanjanaPasanganInRight(wyanjanaChar); 
+    }
+    function isSandhanganWyanjana(key) { return Object.values(sandhanganWyanjana).includes(key); }
+    function isSandhanganPanyigeg(key) { return Object.values(sandhanganPanyigeg).includes(key); }
+    function isSwara(key) { return Object.values(swara).includes(key); }
+    function isConsonants(s) { return Object.prototype.hasOwnProperty.call(wyanjana, s.toLowerCase()); }
+    function isConsonantsMurda(s) { return Object.prototype.hasOwnProperty.call(murdaConsonants, s.toLowerCase()); }
+    function isConsonantsSandhanganPanyigeg(s) { return Object.prototype.hasOwnProperty.call(sandhanganPanyigeg, s.toLowerCase()); }
+    function isConsonantsSandhanganWyanjana(s) { return Object.prototype.hasOwnProperty.call(sandhanganWyanjana, s.toLowerCase()); }
+    function isConsonantL(s) { return s.toLowerCase() === 'l'; }
+    function isConsonantR(s) { return s.toLowerCase() === 'r'; }
+    function isVowels(s) { return Object.prototype.hasOwnProperty.call(sandhanganSwara, s.toLowerCase()); }
+    function isVowelsSwara(s) { return Object.prototype.hasOwnProperty.call(swara, s.toLowerCase()); }
+    function isCharactersAngka(s) { return Object.prototype.hasOwnProperty.call(angka, s.toLowerCase()); }
+    function isCharactersPada(s) { return Object.prototype.hasOwnProperty.call(pada, s.toLowerCase()); }
+    function isVowelsA(s) { const c = s.toLowerCase(); return c === 'a' || c === 'ô'; }
+    function isVowelsPepet(s) { const c = s.toLowerCase(); return c === 'ê' || c === 'ě' || c === 'x'; }
+    function isVowelsWulu(s) { return s.toLowerCase() === 'i'; }
+    function isVowelsSuku(s) { return s.toLowerCase() === 'u'; }
+    function isVowelsTaling(s) { const c = s.toLowerCase(); return c === 'e' || c === 'é' || c === 'è'; }
+    function isVowelsTalingTarung(s) { return s.toLowerCase() === 'o'; }
+    function isPangkon(s) { return s === '꧀'; }
+    function isCakra(s) { return s === 'ꦿ'; }
+    function isWhiteSpace(s) { return s === ' ' || s === '​' || s === " ︀"; }
+
+    // --- MAIN ENGINE CONVERT ---
+    function convert(str, isIgnoreSpace = false, isDiphthong = false, isAksaraSwara = true, isMurda = false) {
+        var length = str.length;
+        var output = [];
+        var isMurdaAlreadyIncluded = false;
+        var isAlreadyStacked = false;
+
+        // Normalisasi input agar huruf 'x' bisa langsung dibaca sebagai pepet 'ê'
+        str = str.replace(/x/g, 'ê');
+        length = str.length;
+
+        for (var i = 0; i < length; i++) {
+            var c = str[i];
+
+            // 1. PENANGANAN DETEKSI DERETAN ANGKA (DENGAN PENGAPIT ꧇)
+            if (isCharactersAngka(c)) {
+                isAlreadyStacked = false;
+                
+                // Masukkan tanda pengapit pembuka "꧇" jika ini awal dari deretan angka
+                output.push('꧇');
+                
+                // Loop untuk mengambil semua angka yang berdampingan
+                while (i < length && isCharactersAngka(str[i])) {
+                    output.push(angka[str[i]]);
+                    i++;
+                }
+                
+                // Masukkan tanda pengapit penutup "꧇" setelah deretan angka berakhir
+                output.push('꧇');
+                i--; // kurangi index karena loop utama juga melakukan i++
+                continue;
+            }
+
+            if(i + 1 < length) {
+                var cc = c + str[i + 1];
+                
+                if(isConsonants(cc) || isConsonants(cc.toLowerCase())) {
+                    i++;
+                    if(cc === cc.toUpperCase()) { cc = cc.toLowerCase(); }
+
+                    if(isConsonantsSandhanganPanyigeg(cc)) {
+                        isAlreadyStacked = false;
+                        if(i - 2 >= 0 && i + 1 < length) {
+                            var cBefore = str[i - 2];
+                            var cAfter = str[i + 1];
+                            if(isVowels(cBefore) && !isVowels(cAfter)) {
+                                output.push(sandhanganPanyigeg[cc.toLowerCase()]);
+                                continue;
+                            }
+                        }
+                        if(i - 2 >= 0 && i === length - 1) {
+                            var cBefore = str[i - 2];
+                            if(isVowels(cBefore)) {
+                                output.push(sandhanganPanyigeg[cc.toLowerCase()]);
+                                continue;
+                            }
+                        }
+                    }
+
+                    if(output.length - 2 >= 0) {
+                        var lastOutput = output[output.length - 1];
+                        var lastOutput2 = output[output.length - 2];
+                        if(isPangkon(lastOutput) && isWyanjanaPasanganInBelow(lastOutput2)) { 
+                            if(isAlreadyStacked) {
+                                output.pop(); output.pop();
+                                output.push('​'); // zero width space
+                                output.push(lastOutput2); output.push(lastOutput);
+                                isAlreadyStacked = false;
+                            } else {
+                                isAlreadyStacked = true;
+                            }
+                        }
+                    }
+
+                    if(isMurda && !isMurdaAlreadyIncluded && isConsonantsMurda(cc)) {
+                        output.push(murdaConsonants[cc.toLowerCase()]);
+                        isMurdaAlreadyIncluded = true;
+                    } else {              
+                         output.push(wyanjana[cc.toLowerCase()]);
+                    }
+                    output.push('꧀');
+                    continue;
+                }
+            }
+
+            if(isConsonantsSandhanganPanyigeg(c)) {
+                isAlreadyStacked = false;
+                let isSandhanganPanyigegCheck = false;
+
+                if(i - 1 >= 0 && i + 1 < length) {
+                    var cBefore = str[i - 1];
+                    var cAfter = str[i + 1];
+                    if(isVowels(cBefore) && !isVowels(cAfter)) { isSandhanganPanyigegCheck = true; }
+                }
+                if(i - 1 >= 0 && i === length - 1) {
+                    var cBefore = str[i - 1];
+                    if(isVowels(cBefore)) { isSandhanganPanyigegCheck = true; }
+                }
+
+                if(isSandhanganPanyigegCheck) {
+                    if(output.length - 1 >= 0) {
+                        var lastOutput = output[output.length - 1];   
+                        if(isPangkon(lastOutput)) { output.pop(); }
+                    }
+                    output.push(sandhanganPanyigeg[c.toLowerCase()]);
+                    continue;
+                }
+            }
+            
+            if(isConsonantsSandhanganWyanjana(c)) {
+                isAlreadyStacked = false;
+                let isSandhanganWyanjanaCheck = false;
+
+                if(i - 2 >= 0) {
+                    var cBeforeCombined = str[i - 2] + str[i - 1];
+                    if(isConsonants(cBeforeCombined) && !isSandhanganPanyigeg(output[output.length - 1])) {
+                        isSandhanganWyanjanaCheck = true;
+                    }
+                }
+                if(i - 1 >= 0) {
+                    var cBeforeSingle = str[i - 1];
+                    if(isConsonants(cBeforeSingle) && !isSandhanganPanyigeg(output[output.length - 1])) {
+                        isSandhanganWyanjanaCheck = true;
+                    }
+                }
+
+                if(isSandhanganWyanjanaCheck) {
+                    if(output.length - 1 >= 0) {
+                        var lastOutput = output[output.length - 1];   
+                        if(isPangkon(lastOutput)) { output.pop(); }
+                    }
+                    output.push(sandhanganWyanjana[c.toLowerCase()]);
+                    continue;
+                }
+            }
+            
+            if(isConsonants(c) || isConsonants(c.toLowerCase())) {
+                if(c === c.toUpperCase()) { c = c.toLowerCase(); }
+
+                if(output.length - 2 >= 0) {
+                    var lastOutput = output[output.length - 1];
+                    var lastOutput2 = output[output.length - 2];
+                    if(isPangkon(lastOutput) && isWyanjanaPasanganInBelow(lastOutput2)) { 
+                        if(isAlreadyStacked) {
+                            output.pop(); output.pop();
+                            output.push('​'); // zero width space
+                            output.push(lastOutput2); output.push(lastOutput);
+                            isAlreadyStacked = false;
+                        } else {
+                            isAlreadyStacked = true;
+                        }
+                    }
+                }
+
+                if(isMurda && !isMurdaAlreadyIncluded && isConsonantsMurda(c)) {
+                    output.push(murdaConsonants[c.toLowerCase()]);
+                    isMurdaAlreadyIncluded = true;
+                } else {
+                    output.push(wyanjana[c.toLowerCase()]);
+                }
+                output.push('꧀');
+                continue;
+            }
+
+            if(isVowels(c) && i + 1 < length) {
+                var c2 = str[i + 1];
+                if(isVowelsWulu(c) && isVowels(c2) && !isVowelsWulu(c2)) {
+                    str = str.substring(0, i + 1) + 'y' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+                if(isVowelsSuku(c) && isVowels(c2) && !isVowelsSuku(c2)) {
+                    str = str.substring(0, i + 1) + 'w' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+                if(isVowelsTaling(c) && isVowelsA(c2)) {
+                    str = str.substring(0, i + 1) + 'y' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+                if(isVowelsTaling(c) && isVowelsTalingTarung(c2)) {
+                    str = str.substring(0, i + 1) + 'y' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+                if(isVowelsTalingTarung(c) && isVowelsA(c2)) {
+                    str = str.substring(0, i + 1) + 'w' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+                if(isVowelsTalingTarung(c) && isVowelsTaling(c2)) {
+                    str = str.substring(0, i + 1) + 'w' + str.substring(i + 1, str.length);
+                    length = str.length;
+                }
+            }
+
+            if(isAksaraSwara && isVowelsSwara(c)) {
+                var cBefore = "";
+                if (i - 1 >= 0) cBefore = str[i - 1];
+
+                var isLastOutputEmpty = output.length === 0;
+                var isLastOutputValid = false;
+                var isLastOutputSwara = false;
+                if (output.length - 1 >= 0) {
+                    var lastOutputChar = output[output.length - 1];
+                    isLastOutputSwara = isSwara(lastOutputChar);
+
+                    if (output.length - 2 >= 0) {
+                        var lastOutputChar2 = output[output.length - 2];
+                        isLastOutputValid = !(isWyanjana(lastOutputChar2) && isPangkon(lastOutputChar)) && !(isWyanjana(lastOutputChar2) && isSandhanganWyanjana(lastOutputChar)) ;
+                    }
+                }
+                
+                if (isLastOutputEmpty || isLastOutputSwara || isLastOutputValid) {
+                    isAlreadyStacked = false;
+                    if(i + 1 < length && isVowels(str[i + 1])) {
+                        var cc = c + str[i + 1];
+                        if(isVowelsSwara(cc)) {
+                            output.push(swara[cc.toLowerCase()]);
+                            i++;
+                            continue;
+                        }
+                    }
+                    output.push(swara[c.toLowerCase()]);
+                    continue;
+                }
+            }
+            
+            if(isVowels(c)) {
+                isAlreadyStacked = false;
+
+                if(isVowelsPepet(c)) {
+                    if(output.length - 1 >= 0) {
+                        var lastOutputChar = output[output.length - 1];
+                        if(isCakra(lastOutputChar)) {
+                            output.pop();
+                            output.push('ꦽ');
+                            continue;
+                        }
+                    }
+
+                    if(i - 1 >= 0) {
+                        var cBefore = str[i - 1];
+                        if(isConsonantL(cBefore)) {
+                            output.pop(); output.pop();
+                            output.push('ꦊ');
+                            continue;
+                        }
+                        if(isConsonantR(cBefore)) {
+                            output.pop(); output.pop();
+                            output.push('ꦉ');
+                            continue;
+                        }
+                    }
+                }
+
+                if(isDiphthong && isVowelsSuku(c)) {
+                    if(i - 2 >= 0) {
+                        var c2Before = str[i - 2];
+                        var cBefore = str[i - 1];
+                        if(isConsonantL(c2Before) && isVowelsPepet(cBefore)) {
+                            output.pop(); output.push('ꦋ');
+                            continue;
+                        }
+                        if(isConsonantR(c2Before) && isVowelsPepet(cBefore)) {
+                            output.pop(); output.push('ꦉꦴ');
+                            continue;
+                        }
+                    }
+                }
+                
+                if(i - 1 >= 0 && isConsonants(str[i - 1])) {
+                    if(output.length - 1 >= 0) {
+                        var lastOutputChar = output[output.length - 1];
+                        if(isPangkon(lastOutputChar)) { output.pop(); }
+                    }
+                    output.push(sandhanganSwara[c.toLowerCase()]);
+                } else {
+                    output.push(wyanjana['h']);
+                    output.push(sandhanganSwara[c.toLowerCase()]);
+                }
+
+                if(isDiphthong && i + 1 < length && isVowels(str[i + 1])) {
+                    var c2 = str[i + 1];
+                    if(isVowelsA(c) && isVowelsA(c2)) {
+                        output.push(sandhanganSwara['aa']); i++; continue;
+                    }
+                    if(isVowelsA(c) && isVowelsWulu(c2)) {
+                        output.push(sandhanganSwara['ai']); i++; continue;
+                    }
+                    if(isVowelsA(c) && isVowelsSuku(c2)) {
+                        output.push(sandhanganSwara['au']); i++; continue;
+                    }
+                    if(isVowelsWulu(c) && isVowelsWulu(c2)) {
+                        output.pop(); output.push(sandhanganSwara['ii']); i++; continue;
+                    }
+                    if (isVowelsSuku(c) && isVowelsSuku(c2)) {
+                        output.pop(); output.push(sandhanganSwara['uu']); i++; continue;
+                    }
+                    if (isVowelsPepet(c) && isVowelsSuku(c2)) {
+                        output.pop(); output.push(sandhanganSwara['êu']); i++; continue;
+                    }
+                }
+                continue;
+            }
+            
+            if(isCharactersPada(c)) {
+                isAlreadyStacked = false;
+                if(isWhiteSpace(c)) {
+                    if (isIgnoreSpace) output.push(pada[c]);
+                    else output.push(c);
+                    continue;
+                }
+                output.push(pada[c]);
+                continue;
+            }
+            
+            isAlreadyStacked = false;
+            output.push(c);
+        }
+
+        // Post Process
+        let res = output.join('');
+        res = res.replace(/ꦤ꧀ꦗ/g, 'ꦚ꧀ꦗ'); // n + ja -> nya + ja
+        res = res.replace(/ꦤ꧀ꦕ/g, 'ꦚ꧀ꦕ'); // n + ca -> nya + ca
+
+        return res;
+    }
+
+    // --- BINDING EVENTS TO DOM ---
+    const inputArea = document.getElementById('inputLatin');
+    const outputDiv = document.getElementById('outputJawa');
+    const optIgnoreSpace = document.getElementById('optIgnoreSpace');
+    const optDiphthong = document.getElementById('optDiphthong');
+    const optAksaraSwara = document.getElementById('optAksaraSwara');
+    const optMurda = document.getElementById('optMurda');
+
+    function handleConvert() {
+        const text = inputArea.value;
+        const result = convert(
+            text,
+            optIgnoreSpace.checked,
+            optDiphthong.checked,
+            optAksaraSwara.checked,
+            optMurda.checked
+        );
+        outputDiv.textContent = result;
+    }
+
+    inputArea.addEventListener('input', handleConvert);
+    optIgnoreSpace.addEventListener('change', handleConvert);
+    optDiphthong.addEventListener('change', handleConvert);
+    optAksaraSwara.addEventListener('change', handleConvert);
+    optMurda.addEventListener('change', handleConvert);
+</script>
+
+</body>
+</html>
