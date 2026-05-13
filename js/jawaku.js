@@ -56,7 +56,7 @@ function isVowelsSwara(s) { return Object.prototype.hasOwnProperty.call(swara, s
 function isCharactersAngka(s) { return Object.prototype.hasOwnProperty.call(angka, s.toLowerCase()); }
 function isCharactersPada(s) { return Object.prototype.hasOwnProperty.call(pada, s.toLowerCase()); }
 function isVowelsA(s) { const c = s.toLowerCase(); return c === 'a' || c === 'ô'; }
-function isVowelsPepet(s) { const c = s.toLowerCase(); return c === 'e' || c === 'ê' || c === 'ě' || c === 'x'; }
+function isVowelsPepet(s) { const c = s.toLowerCase(); return c === 'ê' || c === 'ě' || c === 'x'; }
 function isVowelsWulu(s) { return s.toLowerCase() === 'i'; }
 function isVowelsSuku(s) { return s.toLowerCase() === 'u'; }
 function isVowelsTaling(s) { const c = s.toLowerCase(); return c === 'e' || c === 'é' || c === 'è'; }
@@ -285,27 +285,45 @@ function convert(str, isIgnoreSpace = false, isDiphthong = false, isAksaraSwara 
         if(isVowels(c)) {
             isAlreadyStacked = false;
 
+            // --- LOGIKA UTAMA: PERUBAHAN KHUSUS RÊ, LÊ, DAN CAKRA KERET ---
             if(isVowelsPepet(c)) {
+                // 1. Kasus Sandhangan Wyanjana (krê, prê, brê -> Cakra Keret ꦽ)
                 if(output.length - 1 >= 0) {
                     var lastOutputChar = output[output.length - 1];
                     if(isCakra(lastOutputChar)) {
-                        output.pop();
+                        output.pop(); 
                         output.push('ꦽ');
                         continue;
                     }
                 }
 
+                // 2. Kasus Aksara Mandiri atau Pasangan Kluster (rê, lê, blê, clê, glê, dll.)
                 if(i - 1 >= 0) {
                     var cBefore = str[i - 1];
+                    
                     if(isConsonantL(cBefore)) {
-                        output.pop(); output.pop();
-                        output.push('ꦊ');
+                        output.pop(); // Hapus pangkon '꧀' milik huruf L yang baru masuk
+                        
+                        // Cek jika ada pangkon sebelum aksara L (Artinya L bertindak sebagai pasangan)
+                        if (output.length - 1 >= 0 && isPangkon(output[output.length - 1])) {
+                            output.pop(); // Hapus pangkon konsonan dasar utama
+                            output.pop(); // Hapus huruf 'ꦭ' (la) bawaan
+                            output.push('꧊'); // Ganti langsung dengan bentuk Pasangan Nga Lelet
+                        } else {
+                            // Jika lê mandiri biasa
+                            output.pop(); // Hapus aksara 'ꦭ' (la)
+                            output.push('ꦊ'); // Bersihkan lalu masukkan Nga Lelet
+                        }
                         continue;
                     }
                     if(isConsonantR(cBefore)) {
-                        output.pop(); output.pop();
-                        output.push('ꦉ');
-                        continue;
+                        // Pastikan ini rê mandiri (bukan kluster wyanjana terpisah)
+                        if (output.length - 2 >= 0 && !isPangkon(output[output.length - 2])) {
+                            output.pop(); // Hapus pangkon '꧀' dari huruf R
+                            output.pop(); // Hapus aksara 'ꦫ' (ra)
+                            output.push('ꦉ'); // Bersihkan lalu masukkan Pa Cerek langsung
+                            continue;
+                        }
                     }
                 }
             }
@@ -379,6 +397,7 @@ function convert(str, isIgnoreSpace = false, isDiphthong = false, isAksaraSwara 
     let res = output.join('');
     res = res.replace(/ꦤ꧀ꦗ/g, 'ꦚ꧀ꦗ'); // n + ja -> nya + ja
     res = res.replace(/ꦤ꧀ꦕ/g, 'ꦚ꧀ꦕ'); // n + ca -> nya + ca
+    res = res.replace(/ꦧ꧀꧊/g, 'ꦧ꧀ꦊ'); // Post-fix visual penyesuaian font pasangan nga lelet jika diperlukan
 
     return res;
 }
@@ -421,7 +440,21 @@ btnCopy.addEventListener('click', () => {
     });
 });
 
-inputArea.addEventListener('input', handleConvert);
+// Perbaikan Interaktif: Saat mengetik 'x', langsung berubah jadi 'ê' di dalam textarea/input
+inputArea.addEventListener('input', (e) => {
+    const start = inputArea.selectionStart;
+    const end = inputArea.selectionEnd;
+    const originalValue = inputArea.value;
+    
+    if (originalValue.includes('x')) {
+        inputArea.value = originalValue.replace(/x/g, 'ê');
+        // Kembalikan posisi kursor agar pengguna tidak terganggu saat mengetik di tengah kata
+        inputArea.setSelectionRange(start, end);
+    }
+    
+    handleConvert();
+});
+
 optIgnoreSpace.addEventListener('change', handleConvert);
 optDiphthong.addEventListener('change', handleConvert);
 optAksaraSwara.addEventListener('change', handleConvert);
