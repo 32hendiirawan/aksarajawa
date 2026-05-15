@@ -16,6 +16,7 @@
         <p><i>Transliterasi Huruf Latin ke Aksara Jawa</i></p>
     </div>
 
+    <!-- Panel Konfigurasi -->
     <div class="config-panel">
         <label class="config-label">
             <input type="checkbox" id="optIgnoreSpace">
@@ -35,35 +36,45 @@
         </label>
     </div>
     
-    <div style="display: flex; flex-direction: row; gap: 20px;">
-        <div class="form-group" style="width:50%">
+    <!-- Kontainer Utama (Responsif: Desktop Sampingan, Mobile Atas-Bawah) -->
+    <div class="main-content">
+        <!-- Bagian Input -->
+        <div class="form-group">
             <label for="inputLatin" class="form-label">Input Teks Latin:</label>
-            <textarea id="inputLatin" class="textarea-input" placeholder="Ketik di sini"></textarea>
+            <textarea id="inputLatin" class="textarea-input" placeholder="Ketik di sini..."></textarea>
         </div>
 
-        <div class="form-group" style="width:50%">
+        <!-- Bagian Output -->
+        <div class="form-group">
             <label class="form-label">Output Aksara Jawa:</label>
-            <div class="output-container" style="position: relative; width: 100%;">
-                <div id="outputJawa" class="output-box" style="padding-bottom: 50px;"></div>
+            <div class="output-container">
+                <div id="outputJawa" class="output-box"></div>
                 <button id="btnCopy" class="btn-copy">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
                     <span id="btnCopyText">Salin</span>
                 </button>
             </div>
         </div>
     </div>
     
+    <!-- Bagian Footer / Panduan -->
     <div class="footer-guide">
         <p class="title">Catatan :</p>
         <ul class="guide-list">
-            <li><span class="code-highlight">|</span> (tombol pipe) : Adeg-adeg (꧋), untuk awal paragraf/kalimat</li>
-            <li><span class="code-highlight">e</span> : Taling (ꦺ), untuk bunyi e seperti pada kata "bebek"</li>
-            <li><span class="code-highlight">x</span> : Pepet (ꦼ), untuk bunyi ê seperti pada kata "cecak"</li>
+            <li><span class="code-highlight">|</span> (tombol pipe) : Adeg-adeg (꧋), untuk awal paragraf</li>
+            <li><span class="code-highlight">e</span> : Taling (ꦺ), contoh: b<b>e</b>b<b>e</b>k</li>
+            <li><span class="code-highlight">x</span> : Pepet (ꦼ), contoh: c<b>ê</b>cak (otomatis berubah jadi ê)</li>
         </ul>
-        <p>Kirim masukan atau saran ke <a href="https://wa.me/6282289015759" target="_blank" color="green">WhatsApp</a></p>
-        <p>Kirim dukungan untuk pengembangan <a href="https://saweria.co/32hendiirawan" target="_blank" color="red">Saweria</a></p>
+        <div style="margin-top: 10px;">
+            <p>Kirim masukan atau saran ke <a href="https://wa.me/6282289015759" target="_blank" style="color: #25d366;">WhatsApp</a></p>
+            <p>Dukungan pengembangan via <a href="https://saweria.co/32hendiirawan" target="_blank" style="color: #fa6400;">Saweria</a></p>
+        </div>
     </div>
 </div>
+
 <script src="js/jawaku.js"></script>
 </body>
 </html>
